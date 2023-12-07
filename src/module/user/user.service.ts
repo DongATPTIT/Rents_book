@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import * as bcript from "bcrypt";
 import { error } from "console";
 import { UserRoles } from "src/databases/utils/constants";
+import { aDto } from "src/dto/a.dto";
 
 @Injectable()
 export class UserService {
@@ -34,7 +35,7 @@ export class UserService {
     }
 
     async findAllUser() {
-        return await this.userRepository.find();
+        return await this.userRepository.find({});
     }
 
     async updateUser(id: number, dto) {
@@ -58,9 +59,10 @@ export class UserService {
         if (user) {
             const deleted = await this.userRepository.delete(id);
             const { password, refreshToken, ...rest } = user;
+
             return {
                 message: "User deleted",
-                user: rest
+                user: rest as aDto
             };
         };
     }

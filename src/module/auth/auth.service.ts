@@ -63,7 +63,7 @@ export class AuthService {
     async logOut(id: number) {
         const data = await this.userService.updateUser(id, { refreshToken: null });
         return {
-            message: "log-out successfully",
+            message: "logout successfully",
         }
     }
 
@@ -73,7 +73,7 @@ export class AuthService {
             { refreshToken: null }
         );
         return {
-            message: "log-out all users successfully",
+            message: "logout all users successfully",
         }
     }
 
