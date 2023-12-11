@@ -40,10 +40,10 @@ import { ErrorsInterceptor } from './comon/intercepter/logging.intercepter';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ErrorsInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: ErrorsInterceptor,
+    // },
     UserService
   ],
 })

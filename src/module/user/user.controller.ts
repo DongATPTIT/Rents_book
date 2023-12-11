@@ -1,16 +1,21 @@
-import { Controller, Get, Post, Body, Param, Request, Patch, Delete, ParseIntPipe, ForbiddenException, HttpException, HttpStatus, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Request, Patch, Delete, ParseIntPipe, ForbiddenException, HttpException, HttpStatus, UseInterceptors, ValidationPipe } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { Public } from "src/comon/decorator/public-auth-guard";
 import { Roles } from "src/comon/decorator/role-decorator";
 import { UserRoles } from "src/databases/utils/constants";
-import { error } from "console";
+import { ErrorsInterceptor } from "src/comon/intercepter/logging.intercepter";
+import { UpdateDto } from "src/dto/update.dto";
+import { IdParamDto } from "src/dto/id-param.dto";
+import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-
+// @UseInterceptors(new ErrorsInterceptor)
+@ApiTags('user')
+@ApiBearerAuth('JWT-auth')
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) { }
 
-    @Roles(UserRoles.ADMIN)
+
     @Get()
     async findUser() {
         try {
@@ -20,11 +25,11 @@ export class UserController {
         }
     }
 
-    @Get('/:name')
-    async findByname(@Param('name') name: string, @Request() req) {
+    @Get('/:keyword')
+    async findByname(@Param('keyword') keyword: string, @Request() req) {
         try {
-            const a = await this.userService.findByName(name);
-            return a;
+            const data = await this.userService.findByName(keyword);
+            return data;
         }
         catch (error) {
             throw new HttpException("error", error);
@@ -32,7 +37,7 @@ export class UserController {
     }
 
     @Patch('/:id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() body) {
+    async update(@Param('id', ParseIntPipe) id: number, @Body(new ValidationPipe()) body: UpdateDto) {
         try {
             return await this.userService.updateUser(id, body);
         }
@@ -42,6 +47,7 @@ export class UserController {
     }
 
     @Roles(UserRoles.ADMIN)
+    @ApiResponse({ status: 200, description: "Deleted successfully" })
     @Delete('/:id')
     async delete(@Param('id', ParseIntPipe) id: number) {
         try {

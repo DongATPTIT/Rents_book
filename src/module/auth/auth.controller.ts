@@ -3,24 +3,24 @@ import { AuthService } from "./auth.service";
 import { Public } from "src/comon/decorator/public-auth-guard";
 import { SignInDto } from "src/dto/sign-in.dto";
 import { SignUpDto } from "src/dto/sign-up.dto";
-import { Request } from "express";
-import { UserRoles } from "src/databases/utils/constants";
-import { Roles } from "src/comon/decorator/role-decorator";
+import { REQUEST } from "@nestjs/core";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 
-
+@ApiTags('auth')
+@ApiBearerAuth('JWT-auth')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @Public()
-    @Post()
+    @Post('/signin')
     async signIn(@Body() user: SignInDto) {
         try {
             return await this.authService.signIn(user.email, user.password);
         }
         catch (error) {
-            throw new HttpException('SignIn failed', HttpStatus.UNAUTHORIZED);
+            throw new HttpException('SignIn failed', error);
         }
     }
 
@@ -30,40 +30,33 @@ export class AuthController {
         try {
             return this.authService.createUser(user)
         }
-        catch {
-            throw new Error;
+        catch (error) {
+            throw new error;
         }
     }
 
-    @Public()
-    @Post('/logout/:id')
-    async logout(@Param('id', ParseIntPipe) id: number) {
-        try {
-            return this.authService.logOut(id)
-        } catch {
-            throw new HttpException("Could not logout", HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    @Roles(UserRoles.ADMIN)
     @Post('/logout')
-    async logOutAll() {
+    async logout(@Req() req) {
         try {
-            return this.authService.logOutAllUsers();
-        }
-        catch {
-            throw new ForbiddenException();
+            const user = req.user.sub;
+            return await this.authService.logOut(user);
+        } catch (error) {
+            throw new HttpException("Could not logout", error);
         }
     }
 
-    @Public()
     @Get('/refresh-token')
-    refreshTokens(@Req() req: Request) {
-        const { user, headers } = req as any;
-        const userId = user?.sub;
-        const token = headers?.authorization;
-        const refresh_token = token.replace('Bearer', '').trim();
-        return this.authService.refreshTokens(userId, refresh_token);
+    refreshTokens(@Req() req) {
+        try {
+            const user = req.user;
+            const userId = user?.sub;
+            const token = req?.headers.authorization;
+            const refresh_token = token.replace('Bearer', '').trim();
+            return this.authService.refreshTokens(userId, refresh_token);
+        }
+        catch (error) {
+            throw new error;
+        }
     }
 
 }   

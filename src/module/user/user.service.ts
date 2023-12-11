@@ -1,14 +1,17 @@
-import { Injectable } from "@nestjs/common";
+import { ExecutionContext, HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "src/databases/entity/user.enity";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 import * as bcript from "bcrypt";
 import { error } from "console";
 import { UserRoles } from "src/databases/utils/constants";
-import { aDto } from "src/dto/a.dto";
+import { UserDto } from "src/dto/user.dto";
 
 @Injectable()
 export class UserService {
+    constructorData(context: ExecutionContext) {
+        throw new Error('Method not implemented.');
+    }
     constructor(
         @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
     ) { }
@@ -18,9 +21,16 @@ export class UserService {
         return await this.userRepository.findOne({ where: { email: email } });
     }
     async findByName(name: string) {
-        const results = await this.userRepository.findOne({ where: { name: name } });
-        const { password, ...rest } = results;
-        return rest;
+        const results = await this.userRepository.find({
+            where: {
+                name: Like(`${name}%`),
+            },
+        });
+        const user = results.map((user) => {
+            const { id, name, email, age, role } = user;
+            return { id, name, email, age, role }
+        });
+        return user;
     }
 
     async findAllUserRole() {
@@ -39,18 +49,23 @@ export class UserService {
     }
 
     async updateUser(id: number, dto) {
-        const user = await this.userRepository.findOne({ where: { id: id } });
-        if (user) {
-            const update = await this.userRepository.update(id, dto);
+        try {
             const user = await this.userRepository.findOne({ where: { id: id } });
-            const { password, refreshToken, ...rest } = user;
+            if (user) {
+                const update = await this.userRepository.update(id, dto);
+                const user = await this.userRepository.findOne({ where: { id: id } });
+                const { password, refreshToken, ...rest } = user;
 
-            return {
-                message: "Update successful",
-                user: rest
-            };
-        } else {
-            throw new error("User not found");
+                return {
+                    message: "Update successful",
+                    user: rest
+                };
+            } else {
+                throw new error("User not found");
+            }
+        }
+        catch (error) {
+            throw new error;
         }
     }
 
@@ -62,7 +77,7 @@ export class UserService {
 
             return {
                 message: "User deleted",
-                user: rest as aDto
+                user: rest
             };
         };
     }
