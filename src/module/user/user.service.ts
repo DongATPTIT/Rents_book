@@ -26,11 +26,7 @@ export class UserService {
                 name: Like(`${name}%`),
             },
         });
-        const user = results.map((user) => {
-            const { id, name, email, age, role } = user;
-            return { id, name, email, age, role }
-        });
-        return user;
+        return results;
     }
 
     async findAllUserRole() {
@@ -38,27 +34,31 @@ export class UserService {
         return data;
     }
 
-    async findById(id: number) {
+    async findById(id: string) {
         const results = await this.userRepository.findOne({ where: { id: id } });
-        const { password, ...rest } = results;
-        return rest;
+        return results;
     }
 
     async findAllUser() {
         return await this.userRepository.find({});
     }
 
-    async updateUser(id: number, dto) {
+    async updateUser(id: string, dto) {
         try {
             const user = await this.userRepository.findOne({ where: { id: id } });
             if (user) {
                 const update = await this.userRepository.update(id, dto);
                 const user = await this.userRepository.findOne({ where: { id: id } });
-                const { password, refreshToken, ...rest } = user;
-
+                // const update = await this.userRepository
+                //     .createQueryBuilder()
+                //     .update(UserEntity)
+                //     .set(dto)
+                //     .where("id = :id", { id })
+                //     .returning("*")
+                //     .execute();
                 return {
                     message: "Update successful",
-                    user: rest
+                    user: user
                 };
             } else {
                 throw new error("User not found");
@@ -69,15 +69,13 @@ export class UserService {
         }
     }
 
-    async deleteUser(id: number) {
+    async deleteUser(id: string) {
         const user = await this.userRepository.findOne({ where: { id: id } });
         if (user) {
             const deleted = await this.userRepository.delete(id);
-            const { password, refreshToken, ...rest } = user;
 
             return {
                 message: "User deleted",
-                user: rest
             };
         };
     }

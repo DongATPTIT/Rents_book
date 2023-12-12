@@ -60,7 +60,7 @@ export class AuthService {
         };
     }
 
-    async logOut(id: number) {
+    async logOut(id: string) {
         const data = await this.userService.updateUser(id, { refreshToken: null });
         return {
             message: "logout successfully",
@@ -77,13 +77,13 @@ export class AuthService {
         }
     }
 
-    async updateRefreshToken(userId: number, refreshToken: string) {
+    async updateRefreshToken(userId: string, refreshToken: string) {
         console.log(refreshToken);
         const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
         await this.userService.updateUser(userId, { refreshToken: hashedRefreshToken });
     }
 
-    async getTokens(userId: number, email: string, role: string) {
+    async getTokens(userId: string, email: string, role: string) {
         process.env.SECRET_KEY_ACCESS_TOKEN
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
@@ -115,7 +115,7 @@ export class AuthService {
         };
     }
 
-    async refreshTokens(id: number, refreshToken: string) {
+    async refreshTokens(id: string, refreshToken: string) {
         const user = await this.userService.findById(id);
         if (!user || !user.refreshToken) {
             throw new ForbiddenException('Access Denied');
