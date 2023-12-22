@@ -16,6 +16,8 @@ export class MailService {
             { gmail },
             {
                 priority: 1,
+                removeOnComplete: true,
+                removeOnFail: true
             },
         );
     }

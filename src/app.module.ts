@@ -13,6 +13,7 @@ import { UserService } from './module/user/user.service';
 import { ErrorsInterceptor } from './comon/intercepter/logging.intercepter';
 import { BullModule } from '@nestjs/bull';
 import { MailModule } from './module/mail/mail.module';
+import { SocketModule } from './module/socket/socket.module';
 
 
 @Module({
@@ -30,7 +31,8 @@ import { MailModule } from './module/mail/mail.module';
     TypeOrmModule.forFeature([UserEntity]),
     UserModule,
     AuthModule,
-    MailModule
+    MailModule,
+    SocketModule
   ],
   controllers: [AppController],
   providers: [

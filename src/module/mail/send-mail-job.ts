@@ -37,7 +37,6 @@ export class SendMail {
     @OnQueueCompleted()
     onCompleted(job: Job) {
         console.log(`Completed job ${job.id} of type ${job.name}. `);
-        job.remove();
     }
     @OnQueueFailed()
     onFailed(job: Job) {
