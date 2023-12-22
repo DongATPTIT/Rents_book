@@ -11,6 +11,8 @@ import { RolesGuard } from './comon/guard/role.guard';
 import { LoggerMiddleware } from './comon/middleware/logger.middleware';
 import { UserService } from './module/user/user.service';
 import { ErrorsInterceptor } from './comon/intercepter/logging.intercepter';
+import { BullModule } from '@nestjs/bull';
+import { MailModule } from './module/mail/mail.module';
 
 
 @Module({
@@ -27,7 +29,8 @@ import { ErrorsInterceptor } from './comon/intercepter/logging.intercepter';
     }),
     TypeOrmModule.forFeature([UserEntity]),
     UserModule,
-    AuthModule
+    AuthModule,
+    MailModule
   ],
   controllers: [AppController],
   providers: [

@@ -9,9 +9,6 @@ import { UserDto } from "src/dto/user.dto";
 
 @Injectable()
 export class UserService {
-    constructorData(context: ExecutionContext) {
-        throw new Error('Method not implemented.');
-    }
     constructor(
         @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
     ) { }
@@ -46,6 +43,7 @@ export class UserService {
     async updateUser(id: string, dto) {
         try {
             const user = await this.userRepository.findOne({ where: { id: id } });
+            // console.log(user);
             if (user) {
                 const update = await this.userRepository.update(id, dto);
                 const user = await this.userRepository.findOne({ where: { id: id } });
@@ -57,7 +55,7 @@ export class UserService {
                 //     .returning("*")
                 //     .execute();
                 return {
-                    message: "Update successful",
+                    message: "Update successfuly",
                     user: user
                 };
             } else {

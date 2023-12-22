@@ -40,8 +40,6 @@ export class UserController {
     @Patch('/:id')
     async update(@Param() param: IdParamDto, @Body(new ValidationPipe()) body: UpdateDto) {
         try {
-            // const id = param.id.replace('id=', '');
-            // console.log(id);
             if (!param || param.id === undefined) {
                 throw new HttpException("Invalid id provided", HttpStatus.BAD_REQUEST);
             }
