@@ -39,7 +39,7 @@ export class SendMail {
         console.log(`Completed job ${job.id} of type ${job.name}. `);
     }
     @OnQueueFailed()
-    onFailed(job: Job) {
-        console.log('Failed to send email:', job)
+    onFailed(error) {
+        console.log('Failed to send email:', error)
     }
 }

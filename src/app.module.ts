@@ -45,10 +45,10 @@ import { SocketModule } from './module/socket/socket.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: ErrorsInterceptor,
-    // },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ErrorsInterceptor,
+    },
     UserService
   ],
 })
