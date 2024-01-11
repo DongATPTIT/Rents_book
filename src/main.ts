@@ -7,12 +7,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   dotenv.config();
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('Tina soft')
     .setDescription('Demo')
     .setVersion('1.0')
-    .addTag('tina')
+    // .addTag('tina')
     .addBearerAuth(
       {
         type: 'http',

@@ -14,10 +14,10 @@ export class ErrorsInterceptor implements NestInterceptor {
         return next.handle().pipe(
             map(data => {
                 // console.log('Response data:', data);
-                const users = data.map(user => {
-                    user.age = user.age + 10;
-                    // console.log(user.age);
-                })
+                // const users = data.map(user => {
+                //     user.age = user.age + 10;
+                //     // console.log(user.age);
+                // })
                 return data;
             }),
         );

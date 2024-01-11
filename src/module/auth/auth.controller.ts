@@ -4,17 +4,18 @@ import { Public } from "src/comon/decorator/public-auth-guard";
 import { SignInDto } from "src/dto/sign-in.dto";
 import { SignUpDto } from "src/dto/sign-up.dto";
 import { REQUEST } from "@nestjs/core";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @ApiBearerAuth('JWT-auth')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @Public()
-    @Post('/signin')
+    @ApiOperation({ summary: "Đăng nhập" })
+    @Post('/login')
     async signIn(@Body() user: SignInDto) {
         try {
             return await this.authService.signIn(user.email, user.password);
@@ -25,7 +26,8 @@ export class AuthController {
     }
 
     @Public()
-    @Post('/signup')
+    @ApiOperation({ summary: "Đăng kí" })
+    @Post('/register')
     async create(@Body() user: SignUpDto) {
         try {
             return this.authService.createUser(user)
@@ -36,6 +38,7 @@ export class AuthController {
     }
 
     @Post('/logout')
+    @ApiOperation({ summary: "Đăng xuất" })
     async logout(@Req() req) {
         try {
             const user = req.user.sub;
@@ -45,7 +48,8 @@ export class AuthController {
         }
     }
 
-    @Get('/refresh-token')
+    @ApiOperation({ summary: "Refresh access token" })
+    @Post('/refresh-token')
     refreshTokens(@Req() req) {
         try {
             const user = req.user;

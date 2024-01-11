@@ -18,7 +18,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
                     requireTLS: false,
                     auth: {
                         user: 'namnguyen105202@gmail.com',
-                        pass: 'qgwt sxsc gxng zlx a',
+                        pass: 'qgwt sxsc gxng zlxa',
                     },
                     service: 'gmail',
                     secure: false, // STARTTLS
@@ -27,13 +27,13 @@ import { MailerModule } from '@nestjs-modules/mailer';
         }),
         BullModule.forRoot({
             redis: {
-                host: 'localhost',
+                host: 'redis',
                 port: 6379,
             }
         }),
         BullModule.registerQueue({
             // configKey: "config",
-            name: "SEND_MAIL",
+            name: "SEND_MAILS",
         })
         ,
     ],

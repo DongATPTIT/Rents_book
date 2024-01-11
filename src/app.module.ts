@@ -11,9 +11,10 @@ import { RolesGuard } from './comon/guard/role.guard';
 import { LoggerMiddleware } from './comon/middleware/logger.middleware';
 import { UserService } from './module/user/user.service';
 import { ErrorsInterceptor } from './comon/intercepter/logging.intercepter';
-import { BullModule } from '@nestjs/bull';
 import { MailModule } from './module/mail/mail.module';
 import { SocketModule } from './module/socket/socket.module';
+import { CacheModule } from './module/cache/cache.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 
 @Module({
@@ -24,15 +25,26 @@ import { SocketModule } from './module/socket/socket.module';
       port: 3306,
       username: 'root',
       password: '',
-      database: 'uongthuoc',
+      database: `tina`,
       synchronize: true,
-      entities: [UserEntity]
+      entities: [UserEntity],
     }),
+    // type: 'mysql',
+    // host: 'localhost',
+    // port: 3306,
+    // username: process.env.user_name,
+    // password: process.env.db_password,
+    // database: process.env.db_name,
+    // synchronize: true,
+    // entities: [UserEntity],
+    // autoLoadEntities: true,
     TypeOrmModule.forFeature([UserEntity]),
     UserModule,
     AuthModule,
     MailModule,
-    SocketModule
+    SocketModule,
+    CacheModule,
+
   ],
   controllers: [AppController],
   providers: [

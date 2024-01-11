@@ -1,22 +1,25 @@
-import { Controller, Get, Post, Body, Param, Request, Patch, Delete, ParseIntPipe, ForbiddenException, HttpException, HttpStatus, UseInterceptors, ValidationPipe, ClassSerializerInterceptor } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Request, Patch, Delete, ParseIntPipe, ForbiddenException, HttpException, HttpStatus, UseInterceptors, ValidationPipe, ClassSerializerInterceptor, Inject } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { Public } from "src/comon/decorator/public-auth-guard";
 import { Roles } from "src/comon/decorator/role-decorator";
 import { UserRoles } from "src/databases/utils/constants";
 import { ErrorsInterceptor } from "src/comon/intercepter/logging.intercepter";
 import { UpdateDto } from "src/dto/update.dto";
-import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { IdParamDto } from "src/dto/id-param.dto";
 
+
 @UseInterceptors(ClassSerializerInterceptor)
-@ApiTags('user')
+@ApiTags('Admin')
 @ApiBearerAuth('JWT-auth')
 @Controller('user')
 
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+    constructor(
+        private readonly userService: UserService,
+    ) { }
 
-
+    @Roles(UserRoles.ADMIN)
+    @ApiOperation({ summary: "Admin lấy tất cả user" })
     @Get()
     async findUser() {
         try {
@@ -25,9 +28,10 @@ export class UserController {
             throw new HttpException("error", error);
         }
     }
-
+    @Roles(UserRoles.ADMIN)
+    @ApiOperation({ summary: "Admin tìm kiếm người dùng theo keyword" })
     @Get('/:keyword')
-    async findByname(@Param('keyword') keyword: string, @Request() req) {
+    async findByname(@Param('keyword') keyword: string) {
         try {
             const data = await this.userService.findByName(keyword);
             return data;
@@ -36,13 +40,11 @@ export class UserController {
             throw new HttpException("error", error);
         }
     }
-
+    @Roles(UserRoles.ADMIN)
+    @ApiOperation({ summary: "Admin thay đổi thông tin người dùng " })
     @Patch('/:id')
     async update(@Param() param: IdParamDto, @Body(new ValidationPipe()) body: UpdateDto) {
         try {
-            if (!param || param.id === undefined) {
-                throw new HttpException("Invalid id provided", HttpStatus.BAD_REQUEST);
-            }
             return await this.userService.updateUser(param.id, body);
         }
         catch (error) {
@@ -51,7 +53,7 @@ export class UserController {
     }
 
     @Roles(UserRoles.ADMIN)
-    @ApiResponse({ status: 200, description: "Deleted successfully" })
+    @ApiOperation({ summary: "Admin xóa người dùng" })
     @Delete('/:id')
     async delete(@Param() param: IdParamDto) {
         try {
