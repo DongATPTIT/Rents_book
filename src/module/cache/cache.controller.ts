@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Public } from 'src/comon/decorator/public-auth-guard';
 import { error } from 'console';
@@ -13,22 +13,36 @@ export class RedisController {
 
     @Public()
     @Post()
-    async setData() {
-        const data = await this.redis.set('zzz', 's');
+    async setData(@Body() body: any) {
+        const data = await this.redis.set(body.key, body.value);
         return { data };
     }
 
     @Public()
-    @Delete()
-    async deleteData(@Param() data: any) {
-        const cache = await this.redis.del(`${data}`);
-        return { cache }
+    @Delete('/:key')
+    async deleteData(@Param('key') key: any) {
+        const cache = await this.redis.del(key);
+        return cache
     }
 
     @Public()
     @Get()
     async getData() {
-        const data = await this.redis.keys('*');
-        return { data };
+        const key = await this.redis.keys('*');
+        return { key };
     }
+
+
+    @Public()
+    @Get('/:key')
+    async getDataByKey(@Param('key') key: string) {
+        const value = await this.redis.get(key);
+
+        if (value) {
+            return { key, value };
+        } else {
+            return { error: 'Key not found' };
+        }
+    }
+
 }
