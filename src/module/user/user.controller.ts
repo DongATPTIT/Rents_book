@@ -6,10 +6,11 @@ import { ErrorsInterceptor } from "src/comon/intercepter/logging.intercepter";
 import { UpdateDto } from "src/dto/update.dto";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { IdParamDto } from "src/dto/id-param.dto";
+import { Public } from "src/comon/decorator/public-auth-guard";
 
 
 @UseInterceptors(ClassSerializerInterceptor)
-@ApiTags('Admin')
+@ApiTags('User')
 @ApiBearerAuth('JWT-auth')
 @Controller('user')
 
@@ -62,5 +63,10 @@ export class UserController {
         catch (error) {
             throw new HttpException("Can not delete user", error);
         }
+    }
+    // @Public()
+    @Get('/send/sendmail')
+    async sendMail(@Body() user: any) {
+        return await this.userService.sendMail(user);
     }
 }

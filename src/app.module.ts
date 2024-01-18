@@ -15,6 +15,9 @@ import { MailModule } from './module/mail/mail.module';
 import { SocketModule } from './module/socket/socket.module';
 import { CacheModule } from './module/cache/cache.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { QueueModule } from './module/rabbitmq/rabbitmq.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 
 @Module({
@@ -29,21 +32,30 @@ import { RedisModule } from '@nestjs-modules/ioredis';
       synchronize: true,
       entities: [UserEntity],
     }),
-    // type: 'mysql',
-    // host: 'localhost',
-    // port: 3306,
-    // username: process.env.user_name,
-    // password: process.env.db_password,
-    // database: process.env.db_name,
-    // synchronize: true,
-    // entities: [UserEntity],
-    // autoLoadEntities: true,
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 587,
+          requireTLS: false,
+          auth: {
+            user: 'namnguyen105202@gmail.com',
+            pass: 'qgwt sxsc gxng zlxa',
+          },
+          service: 'gmail',
+          secure: false, // STARTTLS
+        },
+      }),
+    }),
     TypeOrmModule.forFeature([UserEntity]),
     UserModule,
     AuthModule,
     MailModule,
     SocketModule,
     CacheModule,
+    QueueModule
 
   ],
   controllers: [AppController],

@@ -2,15 +2,16 @@ import { ExecutionContext, HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "src/databases/entity/user.enity";
 import { Like, Repository } from "typeorm";
-import * as bcript from "bcrypt";
 import { error } from "console";
 import { UserRoles } from "src/databases/utils/constants";
-import { UserDto } from "src/dto/user.dto";
+import { ProducerService } from "../rabbitmq/producer.service";
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
+        @InjectRepository(UserEntity)
+        private userRepository: Repository<UserEntity>,
+        private readonly producerService: ProducerService,
     ) { }
 
 
@@ -76,5 +77,16 @@ export class UserService {
                 message: "User deleted",
             };
         };
+    }
+    async sendMail(createUserDto: any) {
+        const emailData = {
+            email: `${createUserDto.gmail}`,
+            subject: 'Welcome to Our Community',
+            text: `Hello ${createUserDto.gmail},
+            Welcome to our community! Your account is now active.
+            Enjoy your time with us!`,
+        };
+        await this.producerService.addToEmailQueue(emailData);
+        return emailData;
     }
 }

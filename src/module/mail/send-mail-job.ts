@@ -9,13 +9,11 @@ import {
 
 import { Job } from 'bull';
 
-@Processor('SEND_MAILS')
+@Processor('SEND_MAIL')
 export class SendMail {
     constructor(private readonly mailerService: MailerService) { }
 
-
-
-    @Process()
+    @Process('MAIL')
     async generateReport(job: Job<{ gmail?: { gmail?: string } }>) {
         const data = job.data;
         const gmailAddress = data?.gmail?.gmail;

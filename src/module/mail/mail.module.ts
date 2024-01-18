@@ -8,32 +8,15 @@ import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
     imports: [
-        MailerModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (config: ConfigService) => ({
-                transport: {
-                    host: 'smtp.gmail.com',
-                    port: 587,
-                    requireTLS: false,
-                    auth: {
-                        user: 'namnguyen105202@gmail.com',
-                        pass: 'qgwt sxsc gxng zlxa',
-                    },
-                    service: 'gmail',
-                    secure: false, // STARTTLS
-                },
-            }),
-        }),
         BullModule.forRoot({
             redis: {
-                host: 'redis',
+                host: 'localhost',
                 port: 6379,
             }
         }),
         BullModule.registerQueue({
             // configKey: "config",
-            name: "SEND_MAILS",
+            name: "SEND_MAIL",
         })
         ,
     ],

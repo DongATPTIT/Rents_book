@@ -6,6 +6,7 @@ import { UserService } from "src/module/user/user.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "src/databases/entity/user.enity";
 import { JwtModule } from "@nestjs/jwt";
+import { QueueModule } from "../rabbitmq/rabbitmq.module";
 
 
 
@@ -17,6 +18,7 @@ import { JwtModule } from "@nestjs/jwt";
             secret: process.env.SECRET_KEY_ACCESS_TOKEN,
             // signOptions: { expiresIn: '60d' },
         }),
+        QueueModule
     ],
     controllers: [AuthController],
     providers: [AuthService, UserService],
