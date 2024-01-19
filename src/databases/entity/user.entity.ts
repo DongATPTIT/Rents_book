@@ -4,7 +4,7 @@ import { Exclude } from "class-transformer";
 
 
 @Entity()
-export class UserEntity {
+export class User {
 
 
     @PrimaryGeneratedColumn()

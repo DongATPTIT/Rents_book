@@ -4,7 +4,7 @@ import { AuthController } from "./auth.controller";
 import { UserModule } from "src/module/user/user.module";
 import { UserService } from "src/module/user/user.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { UserEntity } from "src/databases/entity/user.enity";
+import { User } from "src/databases/entity/user.entity";
 import { JwtModule } from "@nestjs/jwt";
 import { QueueModule } from "../rabbitmq/rabbitmq.module";
 
@@ -12,7 +12,7 @@ import { QueueModule } from "../rabbitmq/rabbitmq.module";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity]),
+        TypeOrmModule.forFeature([User]),
         JwtModule.register({
             global: true,
             secret: process.env.SECRET_KEY_ACCESS_TOKEN,

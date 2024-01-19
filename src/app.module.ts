@@ -3,10 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './module/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './databases/entity/user.enity';
+import { User } from './databases/entity/user.entity';
 import { AuthModule } from './module/auth/auth.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { AuthGuard } from './comon/guard/authen.gaurd';
+import { AuthGuard } from './comon/guard/authen.guard';
 import { RolesGuard } from './comon/guard/role.guard';
 import { LoggerMiddleware } from './comon/middleware/logger.middleware';
 import { UserService } from './module/user/user.service';
@@ -18,23 +18,33 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { QueueModule } from './module/rabbitmq/rabbitmq.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { config } from 'dotenv';
+import { Book } from './databases/entity/book.entity';
+import { BookModule } from './module/book/book.module';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: `tina`,
-      synchronize: true,
-      entities: [UserEntity],
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('USER_NAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: ["src/databases/entity/*.js"],
+        autoLoadEntities: true,
+        synchronize: true
+      })
     }),
+
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+
       useFactory: (config: ConfigService) => ({
         transport: {
           host: 'smtp.gmail.com',
@@ -49,14 +59,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         },
       }),
     }),
-    TypeOrmModule.forFeature([UserEntity]),
     UserModule,
     AuthModule,
     MailModule,
     SocketModule,
     CacheModule,
-    QueueModule
-
+    QueueModule,
+    BookModule,
+    TypeOrmModule.forFeature([User, Book],),
   ],
   controllers: [AppController],
   providers: [

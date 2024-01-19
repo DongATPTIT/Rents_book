@@ -1,6 +1,6 @@
 import { ExecutionContext, HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "src/databases/entity/user.enity";
+import { User } from "src/databases/entity/user.entity";
 import { Like, Repository } from "typeorm";
 import { error } from "console";
 import { UserRoles } from "src/databases/utils/constants";
@@ -9,8 +9,8 @@ import { ProducerService } from "../rabbitmq/producer.service";
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(UserEntity)
-        private userRepository: Repository<UserEntity>,
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
         private readonly producerService: ProducerService,
     ) { }
 

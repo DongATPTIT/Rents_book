@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
-import { UserEntity } from "src/databases/entity/user.enity";
+import { User } from "src/databases/entity/user.entity";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthService } from "../auth/auth.service";
 import { JwtService } from "@nestjs/jwt";
@@ -10,9 +10,9 @@ import { QueueModule } from "../rabbitmq/rabbitmq.module";
 
 @Module({
     controllers: [UserController],
-    providers: [UserService, UserEntity],
+    providers: [UserService, User],
     imports: [
-        TypeOrmModule.forFeature([UserEntity]),
+        TypeOrmModule.forFeature([User]),
         QueueModule
     ],
     exports: [UserService]

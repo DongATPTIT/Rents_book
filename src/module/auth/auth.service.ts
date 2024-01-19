@@ -5,7 +5,7 @@ import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import * as argon2 from 'argon2';
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "src/databases/entity/user.enity";
+import { User } from "src/databases/entity/user.entity";
 import { Repository } from "typeorm";
 import { UserRoles } from "src/databases/utils/constants";
 
@@ -16,7 +16,7 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
-        @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
+        @InjectRepository(User) private userRepository: Repository<User>,
     ) { }
 
     async createUser(dto) {

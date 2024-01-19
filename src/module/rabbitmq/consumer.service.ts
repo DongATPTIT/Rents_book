@@ -20,10 +20,7 @@ export class ConsumerService implements OnModuleInit {
                 await channel.consume('emailQueue', async (message) => {
                     if (message) {
                         const content = JSON.parse(message.content.toString());
-                        console.log(content);
                         this.logger.log('Received message:', content);
-                        console.log(content.email);
-                        console.log(content.text);
                         await this.emailService.sendMail({
                             to: content.email,
                             subject: content.subject,
