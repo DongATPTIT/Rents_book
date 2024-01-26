@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, Param, Patch, Post } from "@nestjs/common";
 import { BookService } from "./book.service";
 import { ApiOperation } from "@nestjs/swagger";
 import { BookDto } from "src/dto/book-create.dto";
@@ -6,7 +6,7 @@ import { Roles } from "src/comon/decorator/role-decorator";
 import { UserRoles } from "src/databases/utils/constants";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import { Redis } from "ioredis";
-import { error } from "console";
+import { SearchService } from "../elastic-search/elastic-search.service";
 
 
 @Controller('book')
@@ -14,6 +14,7 @@ export class BookController {
     constructor(
         private bookService: BookService,
         @InjectRedis() private readonly redis: Redis,
+        private readonly searchService: SearchService,
     ) { }
 
     @Post('/create')
@@ -31,7 +32,7 @@ export class BookController {
     @Post('/update/:id')
     @Roles(UserRoles.ADMIN)
     @ApiOperation({ summary: "Cập nhật thông tin sách" })
-    async update(@Param('id') id: string, @Body() dto) {
+    async update(@Param('id') id: number, @Body() dto) {
         try {
             console.log(dto);
             return this.bookService.updateBook(id, dto);
@@ -41,7 +42,7 @@ export class BookController {
         }
     }
 
-    @Get('/update-view/:keyword/:id')
+    @Patch('/update-view/:keyword/:id')
     @ApiOperation({ summary: "Cập nhật lượt xem sách" })
     async updateView(@Param('keyword') keyword: string, @Param('id') value: string) {
         const book = await this.bookService.findByKeyword(keyword, value);
@@ -74,12 +75,16 @@ export class BookController {
 
     @Get('book-by-id/:id')
     @ApiOperation({ summary: "Lấy sách theo id" })
-    async getBookById(@Param('id') id: string) {
+    async getBookById(@Param('id') id: number) {
         try {
             return await this.bookService.getBookById(id);
         }
         catch (error) {
             throw new Error(error);
         }
+    }
+    @Get('/search-book/:keyword')
+    async searchBooks(@Param('keyword') keyword: string): Promise<any> {
+        return this.searchService.searchBooks(keyword);
     }
 }

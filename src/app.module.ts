@@ -8,19 +8,16 @@ import { AuthModule } from './module/auth/auth.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from './comon/guard/authen.guard';
 import { RolesGuard } from './comon/guard/role.guard';
-import { LoggerMiddleware } from './comon/middleware/logger.middleware';
 import { UserService } from './module/user/user.service';
-import { ErrorsInterceptor } from './comon/intercepter/logging.intercepter';
 import { MailModule } from './module/mail/mail.module';
 import { SocketModule } from './module/socket/socket.module';
 import { CacheModule } from './module/cache/cache.module';
-import { RedisModule } from '@nestjs-modules/ioredis';
 import { QueueModule } from './module/rabbitmq/rabbitmq.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { config } from 'dotenv';
 import { Book } from './databases/entity/book.entity';
 import { BookModule } from './module/book/book.module';
+import { SearchModule } from './module/elastic-search/elastic-search.module';
 
 
 @Module({
@@ -66,6 +63,7 @@ import { BookModule } from './module/book/book.module';
     CacheModule,
     QueueModule,
     BookModule,
+    SearchModule,
     TypeOrmModule.forFeature([User, Book],),
   ],
   controllers: [AppController],
@@ -79,17 +77,8 @@ import { BookModule } from './module/book/book.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ErrorsInterceptor,
-    },
-    UserService
+    UserService,
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes('user')
-  }
+export class AppModule {
 }

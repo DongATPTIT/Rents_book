@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Param, Request, Patch, Delete, ParseIntPip
 import { UserService } from "./user.service";
 import { Roles } from "src/comon/decorator/role-decorator";
 import { UserRoles } from "src/databases/utils/constants";
-import { ErrorsInterceptor } from "src/comon/intercepter/logging.intercepter";
 import { UpdateDto } from "src/dto/update.dto";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { IdParamDto } from "src/dto/id-param.dto";

@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn, Timestamp } from "typeorm";
 @Entity()
 export class Book {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column({ length: 500 })
     name: string;

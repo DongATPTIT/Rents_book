@@ -25,7 +25,7 @@ export class BookService {
         }
     }
 
-    async updateBook(id: string, dto) {
+    async updateBook(id: number, dto) {
         try {
             const book = await this.bookRepository.find({ where: { id: id } });
             console.log(book)
@@ -63,7 +63,7 @@ export class BookService {
         }
     }
 
-    async getBookById(id: string) {
+    async getBookById(id: number) {
         try {
             const data = await this.bookRepository.find({ where: { id: id } });
             return data;
