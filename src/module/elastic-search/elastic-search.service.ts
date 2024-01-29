@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from 'src/databases/entity/book.entity';
 import { Repository } from 'typeorm';
@@ -27,9 +28,13 @@ export class SearchService {
         });
     }
 
+    @Cron('10 * * * * *')
     async syncData() {
         const dataToSync = await this.bookRepository.find();
         console.log(dataToSync)
+        await this.elasticsearchService.indices.delete({
+            index: 'books',
+        });
         for (const data of dataToSync) {
             await this.elasticsearchService.index({
                 index: 'books',

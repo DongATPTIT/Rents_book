@@ -1,12 +1,13 @@
 import { Body, Controller, Get, HttpException, Param, Patch, Post } from "@nestjs/common";
-import { BookService } from "./book.service";
 import { ApiOperation } from "@nestjs/swagger";
-import { BookDto } from "src/dto/book-create.dto";
-import { Roles } from "src/comon/decorator/role-decorator";
-import { UserRoles } from "src/databases/utils/constants";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import { Redis } from "ioredis";
+import { Roles } from "@/comon/decorator/role-decorator";
+import { UserRoles } from "@/databases/utils/constants";
+import { BookDto } from "@/dto/book-create.dto";
+import { BookService } from "./book.service";
 import { SearchService } from "../elastic-search/elastic-search.service";
+
 
 
 @Controller('book')

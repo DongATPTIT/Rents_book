@@ -16,7 +16,7 @@ export class ListHotbookService {
     ) { }
 
     @Cron('10 * * * * *')
-    async handleCron() {
+    async getHotBook() {
         await this.redis.flushall();
         const dataBook = await this.bookRepository
             .createQueryBuilder('book')
@@ -26,4 +26,5 @@ export class ListHotbookService {
         await this.redis.set('hot-book', JSON.stringify(dataBook));
         // console.log(await this.redis.get('hot-book'));
     }
+
 }
