@@ -8,7 +8,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 
 @ApiTags('Auth')
-@ApiBearerAuth('JWT-auth')
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) { }

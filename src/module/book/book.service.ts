@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Book } from "src/databases/entity/book.entity";
-import { BookDto } from "src/dto/book-create.dto";
-import { Repository } from "typeorm";
+import { BookDto } from "@/dto/book.dto";
+import { Repository, createQueryBuilder } from "typeorm";
 
 
 @Injectable()
@@ -15,20 +15,22 @@ export class BookService {
     async createBook(dto: BookDto) {
         try {
             const book = await this.bookRepository.find({ where: { name: dto.name } });
-            if (book && book[0] !== undefined) {
-                throw new Error("Book already exists")
-            }
-            return await this.bookRepository.save(dto)
+            console.log(book)
+            console.log(book[0])
+            // if (book || book[0] !== undefined) {
+            //     throw new Error("Book already exists")
+            // }
+            const newBook = this.bookRepository.create(dto);
+            return await this.bookRepository.save(newBook);
         }
         catch (err) {
             throw new Error(err)
         }
     }
 
-    async updateBook(id: number, dto) {
+    async updateBook(id: number, dto: BookDto) {
         try {
             const book = await this.bookRepository.find({ where: { id: id } });
-            console.log(book)
             if (book[0] === undefined) {
                 throw new Error("Book not found");
             }
@@ -47,15 +49,17 @@ export class BookService {
     async findByKeyword(keyword: string, value: string) {
         const condition: Record<string, string> = {};
         condition[keyword] = value;
-        console.log(condition);
         const data = await this.bookRepository.find({ where: condition })
-        console.log(data);
         return data;
     }
 
     async getAllBook() {
         try {
-            const data = await this.bookRepository.find();
+            const data = await this.bookRepository
+                .createQueryBuilder('book')
+                .leftJoinAndSelect('book.author', 'author')
+                .leftJoinAndSelect('book.genre', 'genre')
+                .getMany();
             return data;
         }
         catch (err) {
@@ -65,11 +69,24 @@ export class BookService {
 
     async getBookById(id: number) {
         try {
-            const data = await this.bookRepository.find({ where: { id: id } });
+            const data = await this.bookRepository.find({ where: { id: id }, relations: ["author"] });
             return data;
         }
         catch (error) {
             throw new Error(error);
+        }
+    }
+
+    async deleteById(id: number) {
+        try {
+            const books = await this.bookRepository.find({ where: { id: id } });
+            if (!books) {
+                throw new Error('author not found');
+            }
+            return await this.bookRepository.remove(books)
+        }
+        catch (err) {
+            throw new Error(err);
         }
     }
 }

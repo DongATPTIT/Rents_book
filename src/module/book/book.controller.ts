@@ -1,15 +1,16 @@
-import { Body, Controller, Get, HttpException, Param, Patch, Post } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post } from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiProperty, ApiTags } from "@nestjs/swagger";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import { Redis } from "ioredis";
 import { Roles } from "@/comon/decorator/role-decorator";
 import { UserRoles } from "@/databases/utils/constants";
-import { BookDto } from "@/dto/book-create.dto";
+import { BookDto } from "@/dto/book.dto";
 import { BookService } from "./book.service";
 import { SearchService } from "../elastic-search/elastic-search.service";
 
 
-
+@ApiTags('Books')
+@ApiBearerAuth('JWT-auth')
 @Controller('book')
 export class BookController {
     constructor(
@@ -30,10 +31,11 @@ export class BookController {
         }
     }
 
-    @Post('/update/:id')
+    @Patch('/update/:id')
     @Roles(UserRoles.ADMIN)
+    @ApiBody({ description: 'Dữ liệu cần cập nhật', type: BookDto })
     @ApiOperation({ summary: "Cập nhật thông tin sách" })
-    async update(@Param('id') id: number, @Body() dto) {
+    async update(@Param('id') id: number, @Body() dto: BookDto) {
         try {
             console.log(dto);
             return this.bookService.updateBook(id, dto);
@@ -47,9 +49,9 @@ export class BookController {
     @ApiOperation({ summary: "Cập nhật lượt xem sách" })
     async updateView(@Param('keyword') keyword: string, @Param('id') value: string) {
         const book = await this.bookService.findByKeyword(keyword, value);
-        book[0].view = book[0].view + 1;
+        book[0].borrowCount = book[0].borrowCount + 1;
         const bookUpdate = book[0];
-        return await this.bookService.updateBook(bookUpdate.id, { "view": bookUpdate.view })
+        return await this.bookService.updateBook(bookUpdate.id, { "view": bookUpdate.borrowCount })
     }
 
     @Get('hot-book')
@@ -84,8 +86,15 @@ export class BookController {
             throw new Error(error);
         }
     }
+    @ApiOperation({ summary: "Tìm kiếm sách theo từ khóa" })
     @Get('/search-book/:keyword')
     async searchBooks(@Param('keyword') keyword: string): Promise<any> {
         return this.searchService.searchBooks(keyword);
+    }
+
+    @ApiOperation({ summary: "Xóa sách theo id" })
+    @Delete('delete/:id')
+    async deleteBook(@Param('id') id: number) {
+        return await this.bookService.deleteById(id);
     }
 }

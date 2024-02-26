@@ -20,11 +20,13 @@ export class ListHotbookService {
         await this.redis.flushall();
         const dataBook = await this.bookRepository
             .createQueryBuilder('book')
-            .orderBy('book.view', 'DESC')
+            .select(['book.name', 'book.AuthorID'])
+            .orderBy('book.borrowCount', 'DESC')
             .limit(3)
             .getMany();
+
         await this.redis.set('hot-book', JSON.stringify(dataBook));
-        // console.log(await this.redis.get('hot-book'));
+        // console.log(await this.redis.get('hot-book'));       
     }
 
 }

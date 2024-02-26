@@ -18,6 +18,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Book } from './databases/entity/book.entity';
 import { BookModule } from './module/book/book.module';
 import { SearchModule } from './module/elastic-search/elastic-search.module';
+import { Authors } from './databases/entity/authors.entity';
+import { Genres } from './databases/entity/genres.entity';
+import { AuthorModule } from './module/authors/authors.module';
+import { GenresModule } from './module/genres/genres.module';
+import { UploadModule } from './module/uploads/upload.module';
+import { GentalTicketsModule } from './module/rental-tickets/rental-tickets.module';
+import { Borrowing } from './databases/entity/borrowings.entity';
+import { NotificationService } from './module/notification/notification.service';
+import { NotificationModule } from './module/notification/notification.module';
 
 
 @Module({
@@ -64,7 +73,12 @@ import { SearchModule } from './module/elastic-search/elastic-search.module';
     QueueModule,
     BookModule,
     SearchModule,
-    TypeOrmModule.forFeature([User, Book],),
+    AuthorModule,
+    GenresModule,
+    UploadModule,
+    GentalTicketsModule,
+    NotificationModule,
+    TypeOrmModule.forFeature([User, Book, Authors, Genres, Borrowing],),
   ],
   controllers: [AppController],
   providers: [
@@ -78,6 +92,7 @@ import { SearchModule } from './module/elastic-search/elastic-search.module';
       useClass: RolesGuard,
     },
     UserService,
+    NotificationService
   ],
 })
 export class AppModule {

@@ -28,10 +28,9 @@ export class SearchService {
         });
     }
 
-    @Cron('10 * * * * *')
+    // @Cron('10 * * * * *')
     async syncData() {
         const dataToSync = await this.bookRepository.find();
-        console.log(dataToSync)
         await this.elasticsearchService.indices.delete({
             index: 'books',
         });
@@ -48,6 +47,7 @@ export class SearchService {
         return await this.elasticsearchService.search({
             index: 'books',
             size: 10,
+            filter_path: ['hits.hits._source'],
             body: {
                 query: {
                     "match_all": {}

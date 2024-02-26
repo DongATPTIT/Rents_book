@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Param, Request, Patch, Delete, ParseIntPip
 import { UserService } from "./user.service";
 import { Roles } from "src/comon/decorator/role-decorator";
 import { UserRoles } from "src/databases/utils/constants";
-import { UpdateDto } from "src/dto/update.dto";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { IdParamDto } from "src/dto/id-param.dto";
 import { Public } from "src/comon/decorator/public-auth-guard";
+import { UserDto } from "@/dto/user.dto";
 
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -43,7 +43,7 @@ export class UserController {
     @Roles(UserRoles.ADMIN)
     @ApiOperation({ summary: "Admin thay đổi thông tin người dùng " })
     @Patch('/:id')
-    async update(@Param() param: IdParamDto, @Body(new ValidationPipe()) body: UpdateDto) {
+    async update(@Param() param: IdParamDto, @Body(new ValidationPipe()) body: UserDto) {
         try {
             return await this.userService.updateUser(param.id, body);
         }
