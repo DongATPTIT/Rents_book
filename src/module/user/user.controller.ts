@@ -6,6 +6,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagg
 import { IdParamDto } from "src/dto/id-param.dto";
 import { Public } from "src/comon/decorator/public-auth-guard";
 import { UserDto } from "@/dto/user.dto";
+import { successMessage } from "@/comon/untils/get.respone";
 
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -23,9 +24,10 @@ export class UserController {
     @Get()
     async findUser() {
         try {
-            return await this.userService.findAllUser();
-        } catch (error) {
-            throw new HttpException("error", error);
+            const result = await this.userService.findAllUser();
+            return successMessage(result)
+        } catch {
+            throw new HttpException("Can not get users ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @Roles(UserRoles.ADMIN)
@@ -34,10 +36,10 @@ export class UserController {
     async findByname(@Param('keyword') keyword: string) {
         try {
             const data = await this.userService.findByName(keyword);
-            return data;
+            return successMessage(data);
         }
-        catch (error) {
-            throw new HttpException("error", error);
+        catch {
+            throw new HttpException("Can not get users ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @Roles(UserRoles.ADMIN)
@@ -47,8 +49,8 @@ export class UserController {
         try {
             return await this.userService.updateUser(param.id, body);
         }
-        catch (error) {
-            throw new HttpException("Can not update ", error);
+        catch {
+            throw new HttpException("Can not update ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -59,13 +61,19 @@ export class UserController {
         try {
             return await this.userService.deleteUser(param.id);
         }
-        catch (error) {
-            throw new HttpException("Can not delete user", error);
+        catch {
+            throw new HttpException("Can not delete user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     // @Public()
     @Get('/send/sendmail')
     async sendMail(@Body() user: any) {
-        return await this.userService.sendMail(user);
+        try {
+            const result = await this.userService.sendMail(user);
+            return successMessage(result);
+        }
+        catch {
+            throw new HttpException("Can not send mail ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

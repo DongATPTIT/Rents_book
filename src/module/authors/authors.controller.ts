@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post } from "@nestjs/common";
 import { AuthorService } from "./authors.service";
 import { Roles } from "@/comon/decorator/role-decorator";
 import { UserRoles } from "@/databases/utils/constants";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthorDto } from "@/dto/authors.dto";
-import { Public } from "@/comon/decorator/public-auth-guard";
+import { successMessage } from "@/comon/untils/get.respone";
 
 
 @ApiTags('Authors')
@@ -19,7 +19,13 @@ export class AuthorController {
     @Roles(UserRoles.ADMIN)
     @ApiOperation({ summary: "Thêm tác giả" })
     async create(@Body() book: AuthorDto) {
-        return await this.authorSerivce.createAuthorBook(book);
+        try {
+            const result = await this.authorSerivce.createAuthorBook(book);
+            return successMessage(result);
+        }
+        catch {
+            throw new HttpException("Can not create ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Patch('/update/:id')
@@ -27,11 +33,11 @@ export class AuthorController {
     @ApiOperation({ summary: "Cập nhật thông tin tác giả" })
     async update(@Param('id') id: number, @Body() dto: any) {
         try {
-            console.log(dto);
-            return this.authorSerivce.updateAuthor(id, dto);
+            const result = await this.authorSerivce.updateAuthor(id, dto);
+            return successMessage(result);
         }
-        catch (error) {
-            throw new HttpException("Can not update ", error);
+        catch {
+            throw new HttpException("Can not update ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -39,10 +45,11 @@ export class AuthorController {
     @ApiOperation({ summary: "Lấy tất cả tác giả hiện có" })
     async getAllAuthors() {
         try {
-            return await this.authorSerivce.getAll();
+            const result = await this.authorSerivce.getAll();
+            return successMessage(result);
         }
-        catch (error) {
-            throw new Error(error);
+        catch {
+            throw new HttpException("Can not get authors", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -50,10 +57,11 @@ export class AuthorController {
     @ApiOperation({ summary: "Lấy tác giả theo id" })
     async getAuthorById(@Param('id') id: number) {
         try {
-            return await this.authorSerivce.getAuthorById(id);
+            const result = await this.authorSerivce.getAuthorById(id);
+            return successMessage(result);
         }
-        catch (error) {
-            throw new Error(error);
+        catch {
+            throw new HttpException("Can not get author by id ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -61,6 +69,12 @@ export class AuthorController {
     @Delete('author-by-id/:id')
     @ApiOperation({ summary: "Xóa tác giả theo id" })
     async deleteById(@Param('id') id: number) {
-        return await this.authorSerivce.deleteById(id)
+        try {
+            const result = await this.authorSerivce.deleteById(id);
+            return successMessage(result);
+        }
+        catch {
+            throw new HttpException("Can not delete author ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

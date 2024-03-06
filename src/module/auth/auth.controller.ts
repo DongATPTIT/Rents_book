@@ -5,6 +5,7 @@ import { SignInDto } from "src/dto/sign-in.dto";
 import { SignUpDto } from "src/dto/sign-up.dto";
 import { REQUEST } from "@nestjs/core";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { successMessage } from "@/comon/untils/get.respone";
 
 
 @ApiTags('Auth')
@@ -18,10 +19,11 @@ export class AuthController {
     @Post('/login')
     async signIn(@Body() user: SignInDto) {
         try {
-            return await this.authService.signIn(user.email, user.password);
+            const result = await this.authService.signIn(user.email, user.password);
+            return successMessage(result)
         }
-        catch (error) {
-            throw new HttpException('SignIn failed', error);
+        catch {
+            throw new HttpException("Can not sign in ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -30,10 +32,11 @@ export class AuthController {
     @Post('/register')
     async create(@Body() user: SignUpDto) {
         try {
-            return this.authService.createUser(user)
+            const result = await this.authService.createUser(user);
+            return successMessage(result)
         }
-        catch (error) {
-            throw new error;
+        catch {
+            throw new HttpException("Can not register ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -42,9 +45,10 @@ export class AuthController {
     async logout(@Req() req) {
         try {
             const user = req.user.sub;
-            return await this.authService.logOut(user);
-        } catch (error) {
-            throw new HttpException("Could not logout", error);
+            const result = await this.authService.logOut(user);
+            return successMessage(result)
+        } catch {
+            throw new HttpException("Can not logout", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -56,10 +60,11 @@ export class AuthController {
             const userId = user?.sub;
             const token = req?.headers.authorization;
             const refresh_token = token.replace('Bearer', '').trim();
-            return this.authService.refreshTokens(userId, refresh_token);
+            const result = this.authService.refreshTokens(userId, refresh_token);
+            return successMessage(result)
         }
-        catch (error) {
-            throw new error;
+        catch {
+            throw new HttpException("Can not get refresh token", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

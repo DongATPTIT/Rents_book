@@ -32,7 +32,6 @@ export class NotificationService {
             .getMany();
 
         const test = users.map(async borrowing => {
-            console.log()
             const data = {
                 email: borrowing.user.email,
                 subject: 'Overdue book return',

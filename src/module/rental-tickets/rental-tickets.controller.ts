@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Put } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { RentalTicketsService } from "./rental-tickets.service";
 import { RentalticketDto } from "@/dto/rental-tickets.dto";
+import { successMessage } from "@/comon/untils/get.respone";
 
 
 @ApiTags('Gental-tickets')
@@ -17,7 +18,13 @@ export class GentalTicketController {
     @ApiOperation({ summary: "Thêm vé thuê" })
 
     async create(@Body() body: RentalticketDto) {
-        return await this.rentalTicketService.createRentalTickets(body, body.booksId, body.quantity);
+        try {
+            const result = await this.rentalTicketService.createRentalTickets(body, body.booksId);
+            return successMessage(result);
+        }
+        catch {
+            throw new HttpException("Can not create rental ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Patch('/update/:id')
@@ -25,11 +32,11 @@ export class GentalTicketController {
     @ApiOperation({ summary: "Cập nhật thông tin vé thuê" })
     async update(@Param('id') id: number, @Body() dto: RentalticketDto) {
         try {
-            console.log(dto);
-            return this.rentalTicketService.update(id, dto);
+            const result = await this.rentalTicketService.update(id, dto);
+            return successMessage(result);
         }
-        catch (error) {
-            throw new HttpException("Can not update ", error);
+        catch {
+            throw new HttpException("Can not update", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -37,10 +44,11 @@ export class GentalTicketController {
     @ApiOperation({ summary: "Lấy tất cả vé thuê hiện có" })
     async getAllAuthors() {
         try {
-            return await this.rentalTicketService.getAll();
+            const result = await this.rentalTicketService.getAll();
+            return successMessage(result);
         }
-        catch (error) {
-            throw new Error(error);
+        catch {
+            throw new HttpException("Can not get rentals ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -48,16 +56,23 @@ export class GentalTicketController {
     @ApiOperation({ summary: "Lấy vé thuê theo id" })
     async getById(@Param('id') id: number) {
         try {
-            return await this.rentalTicketService.getById(id);
+            const result = await this.rentalTicketService.getById(id);
+            return successMessage(result);
         }
-        catch (error) {
-            throw new Error(error);
+        catch {
+            throw new HttpException("Can not get rental by id ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Delete('delete-by-id/:id')
     @ApiOperation({ summary: "Xóa vé thuê theo id" })
     async deleteById(@Param('id') id: number) {
-        return await this.rentalTicketService.deleteById(id)
+        try {
+            const result = await this.rentalTicketService.deleteById(id);
+            return successMessage(result);
+        }
+        catch {
+            throw new HttpException("Can not delete rental ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

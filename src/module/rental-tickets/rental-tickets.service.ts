@@ -14,20 +14,17 @@ export class RentalTicketsService {
         private readonly bookRepository: Repository<Book>,
     ) { }
 
-    async createRentalTickets(data: any, bookId: number[], quantity: number[]) {
+    async createRentalTickets(data: any, bookId: number[]) {
         try {
             const borrowing = await this.borrowingRepo.save(data);
-            console.log(data)
             const books = await this.bookRepository
                 .createQueryBuilder()
                 .whereInIds(bookId)
                 .getMany()
-            // console.log(books)
             if (!books || books.length !== bookId.length) {
                 throw new Error('One or more books not found');
             }
             borrowing.books = books;
-            // console.log(borrowing.books)
             return await this.borrowingRepo.save(borrowing);
         } catch (error) {
             throw new Error(`Error creating rental tickets: ${error.message}`);

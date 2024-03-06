@@ -15,8 +15,6 @@ export class BookService {
     async createBook(dto: BookDto) {
         try {
             const book = await this.bookRepository.find({ where: { name: dto.name } });
-            console.log(book)
-            console.log(book[0])
             // if (book || book[0] !== undefined) {
             //     throw new Error("Book already exists")
             // }

@@ -2,7 +2,6 @@ import Redis from 'ioredis';
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Public } from 'src/comon/decorator/public-auth-guard';
-import { error } from 'console';
 
 
 @Controller('cache')

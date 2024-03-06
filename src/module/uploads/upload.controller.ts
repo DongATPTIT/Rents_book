@@ -1,7 +1,8 @@
-import { Controller, Param, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Controller, HttpException, HttpStatus, Param, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { ClouldinaryService } from "./clouldinary.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { successMessage } from "@/comon/untils/get.respone";
 
 
 
@@ -30,10 +31,9 @@ export class UploadController {
     async uploadFile(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) {
         try {
             const result = await this.uploadService.uploadImage(id, file.path);
-            return result;
-        } catch (error) {
-            console.log(error)
-            throw new Error("upload fail");
+            return successMessage(result);
+        } catch {
+            throw new HttpException("Can not up load file", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

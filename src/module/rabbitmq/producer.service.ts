@@ -16,7 +16,6 @@ export class ProducerService {
 
   async addToEmailQueue(mail: any) {
     try {
-      console.log(mail)
       await this.channelWrapper.sendToQueue(
         'Queue',
         Buffer.from(JSON.stringify(mail)),

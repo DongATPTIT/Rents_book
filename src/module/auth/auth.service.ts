@@ -22,7 +22,6 @@ export class AuthService {
     async createUser(dto) {
         try {
             const check = await this.userRepository.findOne({ where: { email: dto.email } });
-            console.log(check);
             if (check !== null) {
                 throw new Error("Email already exists");
             }

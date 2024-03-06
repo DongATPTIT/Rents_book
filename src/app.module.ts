@@ -5,7 +5,7 @@ import { UserModule } from './module/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './databases/entity/user.entity';
 import { AuthModule } from './module/auth/auth.module';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from './comon/guard/authen.guard';
 import { RolesGuard } from './comon/guard/role.guard';
 import { UserService } from './module/user/user.service';
@@ -27,6 +27,7 @@ import { GentalTicketsModule } from './module/rental-tickets/rental-tickets.modu
 import { Borrowing } from './databases/entity/borrowings.entity';
 import { NotificationService } from './module/notification/notification.service';
 import { NotificationModule } from './module/notification/notification.module';
+import { AllExceptionsFilter } from './exception/all-exception.filter';
 
 
 @Module({
@@ -90,6 +91,10 @@ import { NotificationModule } from './module/notification/notification.module';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
     UserService,
     NotificationService

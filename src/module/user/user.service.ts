@@ -44,17 +44,9 @@ export class UserService {
     async updateUser(id: string, dto) {
         try {
             const user = await this.userRepository.findOne({ where: { id: id } });
-            // console.log(user);
             if (user) {
                 const update = await this.userRepository.update(id, dto);
                 const user = await this.userRepository.findOne({ where: { id: id } });
-                // const update = await this.userRepository
-                //     .createQueryBuilder()
-                //     .update(UserEntity)
-                //     .set(dto)
-                //     .where("id = :id", { id })
-                //     .returning("*")
-                //     .execute();
                 return {
                     message: "Update successfuly",
                     user: user

@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post } from "@nestjs/common";
 import { Roles } from "@/comon/decorator/role-decorator";
 import { UserRoles } from "@/databases/utils/constants";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Public } from "@/comon/decorator/public-auth-guard";
 import { GenresService } from "./genres.service";
 import { GenresCreateDto } from "@/dto/genres.dto";
+import { successMessage } from "@/comon/untils/get.respone";
 
 
 @ApiTags('Genres')
@@ -19,7 +20,13 @@ export class GenresController {
     @Roles(UserRoles.ADMIN)
     @ApiOperation({ summary: "Thêm thể loại" })
     async create(@Body() genres: GenresCreateDto) {
-        return await this.genresService.createGenres(genres);
+        try {
+            const result = await this.genresService.createGenres(genres);
+            return successMessage(result);
+        }
+        catch {
+            throw new HttpException("Can not create genres ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Patch('/update/:id')
@@ -28,11 +35,11 @@ export class GenresController {
     @ApiOperation({ summary: "Cập nhật thông tin thể loại" })
     async update(@Param('id') id: number, @Body() dto: any) {
         try {
-            console.log(dto);
-            return this.genresService.update(id, dto);
+            const result = await this.genresService.update(id, dto);
+            return successMessage(result);
         }
-        catch (error) {
-            throw new HttpException("Can not update ", error);
+        catch {
+            throw new HttpException("Can not update ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -41,10 +48,11 @@ export class GenresController {
     @ApiOperation({ summary: "Lấy tất cả thể loại hiện có" })
     async getAllGenres() {
         try {
-            return await this.genresService.getAll();
+            const result = await this.genresService.getAll();
+            return successMessage(result);
         }
-        catch (error) {
-            throw new Error(error);
+        catch {
+            throw new HttpException("Can not get genres ", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -52,10 +60,11 @@ export class GenresController {
     @ApiOperation({ summary: "Lấy thể loại theo id" })
     async getGenresById(@Param('id') id: number) {
         try {
-            return await this.genresService.getGenresById(id);
+            const result = await this.genresService.getGenresById(id);
+            return successMessage(result);
         }
-        catch (error) {
-            throw new Error(error);
+        catch {
+            throw new HttpException("Can not get genre by id", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -63,6 +72,11 @@ export class GenresController {
     @Delete('author-by-id/:id')
     @ApiOperation({ summary: "Xóa thể loại theo id" })
     async deleteById(@Param('id') id: number) {
-        return await this.genresService.deleteById(id)
+        try {
+            const result = await this.genresService.deleteById(id);
+            return successMessage(result);
+        } catch {
+            throw new HttpException("Can not delete ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
